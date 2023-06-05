@@ -22,3 +22,7 @@ fristL -- TIMESTAMP
 --------------------------------------------------------------
 HarryZ -- 2023-06-02 13:50
 * updated devlog and readme  
+
+Feedback Summary:
+* What is the maximum number of players that could play in a single game?
+* Is it a pop up or loading page for create and joing room?
