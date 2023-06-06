@@ -1,4 +1,7 @@
 // For managing game logic (game events and user inputs)
+var express = require('express');
+var app = express()
+
 const gameCanvas = document.getElementById('gameCanvas');
 const ctx = gameCanvas.getContext('2d');
 var requestID;
@@ -34,6 +37,29 @@ var clear = (e) => {
     ctx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
 };
 
+makePlayer = () => {
+    this.x = 20;
+    this.y = 200;
+
+    //For making the collision box where the player would die if the box collides with a block object
+    this.blockHurtboxXMin = 5;
+    this.blockHurtboxXMax = 35
+    this.blockHurtboxYMin = 8;
+    this.blockHurtboxYMax = 40
+
+    //For making the collision box where the player lands on top of a block or the ground
+    this.blockHitboxXMin = 0;
+    this.blockHitboxXMax = 40;
+    this.blockHitboxYMin = 0;
+    this.blockHitboxYMax = 8;
+
+    //For making the collision box where the player dies when they touch a spike object
+    this.spikeHurtboxXMin = 5;
+    this.spikeHurtboxXMax = 35;
+    this.spikeHurtboxYMin = 0;
+    this.spikeHurtboxYMax = 40;
+}
+
 var makeSolidBlock = (width, height, x, y) => {
 
 }
@@ -45,9 +71,13 @@ var makeSpikeBlock = (width, height, x, y) => {
 
 var startGame = (e) => {
     clear(e);
+    obstacles.push(makeSolidBlock(50, 20));
 
     runGame();
-    obstacles.push(makeSolidBlock(50, 20));
+}
+
+var collisionDetection = (player, block) => {
+
 }
 
 var runGame = (e) => {
@@ -55,7 +85,7 @@ var runGame = (e) => {
 }
 
 document.onkeydown = function (e) {
-    if (e.keyCode == 49) {
+    if (e.key == 'Space') {
         onFloor = false;
         isJumping = true;
         isFalling = false;
