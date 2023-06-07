@@ -13,4 +13,31 @@
 
     <canvas width="600" height="250" id="playground">
     </canvas>
+
+    <script src="/socket.io/socket.io.js"></script>
+
+    <script src ="../controllers/userController.js">
+        var gameCanvas = document.getElementById('playground');
+        var ctx = gameCanvas.getContext('2d');
+        var requestID;
+
+        var clear = (e) => {
+            ctx.clearRect(0, 0,c.width,c.height);
+        };
+
+        const socket = io();
+
+        // Receive the game state from the server
+        socket.on('gameState', (receivedGameState) => {
+            // Update the client-side game state based on the received data
+            gameState = recievedGameState;
+
+            for (var i = 0; i < gameState[0].length, i++) {
+                ctx.fillRect(gamestate[0][i].x, gamestate[0][i].y, 40, 40);
+            }
+            for (var i = 0; i < gameState[1].length, i++) {
+                ctx.fillRect(gamestate[1][i].x, gamestate[1][i].y, gamestate[1][i].width, gamestate[1][i].height);
+            }
+        });
+    </script>
 </html>
