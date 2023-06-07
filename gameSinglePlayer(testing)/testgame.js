@@ -1,32 +1,14 @@
-// For managing game logic (game events and user inputs)
-var express = require('express');
-var http = require('http');
-var socketIO = require('socket.io');
-
-var app = express()
-var server = http.createServer();
-var io = socketIO(server);
-
-const port = 3000
-
-/*
-app.set('view engine', 'ejs')
-
-app.get('/', (req, res) => {
-    res.render('pages/index')
-})
-app.listen(port, () => {
-    console.log(`App listening at port ${port}`)
-})
-*/
-
-var players = [];
 var obstacles = [];
+var c = document.getElementById("playground");
+var ctx = c.getContext("2d");
+var startButton = document.getElementById("buttonStart");
+var requestID;
+var player
 
 class Player {
     constructor() {
-        this.x = 20;
-        this.y = 200;
+        this.x = 40;
+        this.y = 400;
         this.yvel = 0;
 
         //For making the collision box where the player would die if the box collides with a block object
@@ -52,13 +34,18 @@ class Player {
         this.onFloor = true;
     }
 
+    position() {
+        return [this.x, this.y];
+    }
+
     jump() {
         this.onFloor = false;
         this.yvel = 5;
+        return
     }
 
     collisionDetection(block) {
-        
+        return
     }
 
     physics() {
@@ -66,6 +53,7 @@ class Player {
             this.y -= yvel;
             this.yvel += 0.1;
         }
+        return this.position()
     }
 }
 
@@ -74,8 +62,8 @@ class Block {
         this.width = width;
         this.height = height;
         this.type = type;
-        this.x = 550;
-        this.y = 200;
+        this.x = 1100;
+        this.y = 400;
     }
 
     physics() {
@@ -83,16 +71,9 @@ class Block {
     }
 }
 
-/*
-var makeSolidBlock = (width, height, x, y) => {
-
-}
-
-// Probably make spike blocks just squares with a different color, writing code for collision detection with a triangle shape is extra work and probably not worth it unless I have time
-var makeSpikeBlock = (width, height, x, y) => {
-
-}
-*/
+var clear = (e) => {
+    ctx.clearRect(0, 0,c.width,c.height);
+};
 
 var broadcastGameState = () => {
     var gameState = [players, obstacles];
@@ -102,47 +83,28 @@ var broadcastGameState = () => {
 var startGame = (e) => {
     clear(e);
     obstacles.push(new Block(40,80,'Solid'));
-    players.push(new Player());
+    player = new Player();
 
     runGame(e);
 }
 
-/*
-var collisionDetection = (player, block) => {
-
-}
-*/
-
 var runGame = (e) => {
-    for (var i = 0; i < players.length; i++) {
-        players[i].physics();
-    }
+    window.cancelAnimationFrame(requestID);
+    clear(e);
+    player.physics();
+    ctx.fillRect(player.x,player.y,40,40);
     for (var i = 0; i > obstacles.length; i++) {
         obstacles[i].physics();
+        ctx.fillRect(obstacles[i].x,obstacles[i].y,obstacles[i].width,obstacles[i].height);
     }
+    requestID = window.requestAnimationFrame(runGame);
 }
-
-io.on('connection', (socket) => {
-    // Send the initial game state to the newly connected client
-    socket.emit('gameState', gameState);
-
-    // Handle client disconnection
-    socket.on('disconnect', () => {
-        // Remove the player associated with the disconnected client from the game state
-        // You would need to implement this part based on your game's logic
-        // For example: gameState.players = gameState.players.filter(player => player.id !== socket.id);
-
-        // Broadcast the updated game state to all remaining clients
-        broadcastGameState();
-    })
-})
 
 //Later change this to store player inputs from multiple clients, which will then execute the code for each corresponding player
 document.onkeydown = (e) => {
     if (e.key == 'Space') {
-        player.jump();
+        player.jump();var dotButton = document.getElementById("buttonCircle");
     }
 }
 
-startGame();
-setInterval(runGame, 1000 / 60);
+startButton.addEventListener("click", startGame);
