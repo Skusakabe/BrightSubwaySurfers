@@ -57,6 +57,7 @@ class Player {
             if (block.type == "Solid" || block.type == "Ground") {
                 // Check if colliding into a wall horizontally
                 if (checkIntersecting(this.x + this.blockHurtboxXMin, this.x + this.blockHurtboxXMax, this.y + this.blockHurtboxYMin, this.y + this.blockHurtboxYMax, block.x, block.x + block.width, block.y, block.y + block.height)) {
+                    console.log("killed by" + block.type);
                     this.alive = false;
                 }
                 // Check if landing on top of a block, stops checking for this if it find that you are on top of at least 1 solid block
@@ -65,7 +66,6 @@ class Player {
                         if (!this.jumping) {
                             console.log("intersecting with" + block.type);
                             this.onFloor = true;
-                            this.y = block.y - 40;
                             this.yvel = 0;
                         }
                         checkLanding = false;
@@ -78,6 +78,7 @@ class Player {
             else if (block.type == "Spike") {
                 // Check if colliding with a spike block (kills if touching from anywhere)
                 if (checkIntersecting(this.x + this.spikeHurtboxXMin, this.x + this.spikeHurtboxXMax, this.y + this.spikeHurtboxYMin, this.y + this.spikeHurtboxYMax, block.x, block.x + block.width, block.y, block.y + block.height)) {
+                    console.log("intersecting with" + block.type);
                     this.alive = false;
                 }
             }
@@ -93,7 +94,9 @@ class Player {
         if (!this.onFloor) {
             this.prevy = this.y;
             this.y -= this.yvel;
-            this.yvel -= 0.16;
+            if (this.yvel > -8) {
+                this.yvel -= 0.16;
+            }
         }
         return this.position();
     }
@@ -119,8 +122,8 @@ var checkIntersecting = (aXMin, aXMax, aYMin, aYMax, bXMin, bXMax, bYMin, bYMax)
     var yIntersection = false;
     if ((aXMin > bXMin && aXMin < bXMax) || (aXMax > bXMin && aXMax < bXMax)) {
         xIntersection = true;
-        console.log("xintersection");
-        console.log(aXMin + " " + aXMax + " " + bXMin + " " + bXMax);
+        //console.log("xintersection");
+        //console.log(aXMin + " " + aXMax + " " + bXMin + " " + bXMax);
     }
     if ((aYMin > bYMin && aYMin < bYMax) || (aYMax > bYMin && aYMax < bYMax)) {
         yIntersection = true;
@@ -128,7 +131,7 @@ var checkIntersecting = (aXMin, aXMax, aYMin, aYMax, bXMin, bXMax, bYMin, bYMax)
         console.log(aYMin + " " + aYMax + " " + bYMin + " " + bYMax);
     }
     if (xIntersection && yIntersection) {
-        console.log("We intersectin!");
+        //console.log("We intersectin!");
     }
     return (xIntersection && yIntersection);
 }
@@ -140,7 +143,6 @@ var clear = (e) => {
 var startGame = (e) => {
     clear(e);
     obstacles.push(new Block(0, 440, 1200, 60, 'Ground'));
-    obstacles.push(new Block(1100, 360, 40, 80, 'Solid'));
     player = new Player();
 
     runGame(e);
@@ -164,6 +166,13 @@ var runGame = (e) => {
             ctx.fillStyle = "red";
         }
         ctx.fillRect(obstacles[i].x,obstacles[i].y,obstacles[i].width,obstacles[i].height);
+    }
+    for (block in obstacles) {
+        if (block.x < -100) {
+            var index = obstacles.indexOf(block);
+            obstacles = obstacles.splice(index, 1);
+            console.log(obstacles.length);
+        }
     }
     blockSpawnRNG = Math.floor(Math.random() * 200);
     if (blockSpawnRNG == 199) {
