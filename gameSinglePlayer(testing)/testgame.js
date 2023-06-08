@@ -41,33 +41,34 @@ class Player {
     jump() {
         this.onFloor = false;
         this.yvel = 5;
-        return
+        return;
     }
 
     collisionDetection(block) {
-        return
+        return;
     }
 
     physics() {
         if (!(this.onFloor)) {
-            this.y -= yvel;
-            this.yvel += 0.1;
+            this.y -= this.yvel;
+            this.yvel -= 0.1;
         }
-        return this.position()
+        return this.position();
     }
 }
 
 class Block {
-    constuctor(width, height, type) {
+    constructor(x, y, width, height, type) {
         this.width = width;
         this.height = height;
         this.type = type;
-        this.x = 1100;
-        this.y = 400;
+        this.x = x;
+        this.y = y;
     }
 
     physics() {
         this.x -= 4;
+        return;
     }
 }
 
@@ -82,7 +83,8 @@ var broadcastGameState = () => {
 
 var startGame = (e) => {
     clear(e);
-    obstacles.push(new Block(40,80,'Solid'));
+    obstacles.push(new Block(0, 440, 1200, 60, 'Ground'));
+    obstacles.push(new Block(1100, 360, 40, 80, 'Solid'));
     player = new Player();
 
     runGame(e);
@@ -92,19 +94,38 @@ var runGame = (e) => {
     window.cancelAnimationFrame(requestID);
     clear(e);
     player.physics();
+    ctx.fillStyle = "green";
     ctx.fillRect(player.x,player.y,40,40);
-    for (var i = 0; i > obstacles.length; i++) {
-        obstacles[i].physics();
+    for (var i = 0; i < obstacles.length; i++) {
+        if (!(obstacles[i].type == 'Ground')) {
+            obstacles[i].physics();
+        }
+        if (obstacles[i].type == 'Ground' || obstacles[i].type == 'Solid') {
+            ctx.fillStyle = "black";
+        }
+        if (obstacles[i].type == 'Spike') {
+            ctx.fillStyle = "red";
+        }
         ctx.fillRect(obstacles[i].x,obstacles[i].y,obstacles[i].width,obstacles[i].height);
     }
     requestID = window.requestAnimationFrame(runGame);
 }
 
 //Later change this to store player inputs from multiple clients, which will then execute the code for each corresponding player
+document.addEventListener("keydown", (e) => {
+    if (e.key == ' ') {
+        player.jump();
+        console.log("jumpy time");
+    }
+});
+
+/*
 document.onkeydown = (e) => {
     if (e.key == 'Space') {
-        player.jump();var dotButton = document.getElementById("buttonCircle");
+        player.jump();
+        console.log("jumpy time");
     }
 }
+*/
 
 startButton.addEventListener("click", startGame);
