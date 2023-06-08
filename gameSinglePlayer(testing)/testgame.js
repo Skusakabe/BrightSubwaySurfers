@@ -45,6 +45,12 @@ class Player {
     }
 
     collisionDetection(block) {
+        if (block.type == "Solid" || block.type == "Ground") {
+
+        }
+        else if (block.type == "Spike") {
+
+        }
         return;
     }
 
