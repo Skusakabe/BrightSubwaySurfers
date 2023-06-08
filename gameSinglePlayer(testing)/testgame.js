@@ -40,7 +40,7 @@ class Player {
 
     jump() {
         this.onFloor = false;
-        this.yvel = 5;
+        this.yvel = 7;
         return;
     }
 
@@ -50,8 +50,9 @@ class Player {
 
     physics() {
         if (!(this.onFloor)) {
+            this.prevy = this.y;
             this.y -= this.yvel;
-            this.yvel -= 0.1;
+            this.yvel -= 0.18;
         }
         return this.position();
     }
