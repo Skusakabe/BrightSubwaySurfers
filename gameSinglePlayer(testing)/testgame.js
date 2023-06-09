@@ -41,7 +41,8 @@ class Player {
     jump() {
         this.onFloor = false;
         this.jumping = true;
-        this.yvel = 8;
+        this.y -= 2;
+        this.yvel = 7;
         setTimeout(() => {
             console.log('hm');
             this.jumping = false;
@@ -66,6 +67,7 @@ class Player {
                         if (!this.jumping) {
                             console.log("intersecting with" + block.type);
                             this.onFloor = true;
+                            this.jumping = false;
                             this.yvel = 0;
                         }
                         checkLanding = false;
@@ -94,8 +96,8 @@ class Player {
         if (!this.onFloor) {
             this.prevy = this.y;
             this.y -= this.yvel;
-            if (this.yvel > -8) {
-                this.yvel -= 0.16;
+            if (this.yvel > -9) {
+                this.yvel -= 0.18;
             }
         }
         return this.position();
@@ -120,12 +122,12 @@ class Block {
 var checkIntersecting = (aXMin, aXMax, aYMin, aYMax, bXMin, bXMax, bYMin, bYMax) => {
     var xIntersection = false;
     var yIntersection = false;
-    if ((aXMin > bXMin && aXMin < bXMax) || (aXMax > bXMin && aXMax < bXMax)) {
+    if ((aXMin >= bXMin && aXMin <= bXMax) || (aXMax >= bXMin && aXMax <= bXMax)) {
         xIntersection = true;
         //console.log("xintersection");
         //console.log(aXMin + " " + aXMax + " " + bXMin + " " + bXMax);
     }
-    if ((aYMin > bYMin && aYMin < bYMax) || (aYMax > bYMin && aYMax < bYMax)) {
+    if ((aYMin >= bYMin && aYMin <= bYMax) || (aYMax >= bYMin && aYMax <= bYMax)) {
         yIntersection = true;
         console.log("yintersection");
         console.log(aYMin + " " + aYMax + " " + bYMin + " " + bYMax);
@@ -176,7 +178,13 @@ var runGame = (e) => {
     }
     blockSpawnRNG = Math.floor(Math.random() * 200);
     if (blockSpawnRNG == 199) {
-        obstacles.push(new Block(1100, 360, 40, 80, 'Solid'));
+        blockSpawnRNG = Math.floor(Math.random() * 2);
+        if (blockSpawnRNG == 1) {
+            obstacles.push(new Block(1100, 360, 40, 80, 'Spike'));
+        }
+        else {
+            obstacles.push(new Block(1100, 360, 40, 80, 'Solid'));
+        }
     }
     requestID = window.requestAnimationFrame(runGame);
 }
@@ -184,8 +192,10 @@ var runGame = (e) => {
 //Later change this to store player inputs from multiple clients, which will then execute the code for each corresponding player
 document.addEventListener("keydown", (e) => {
     if (e.key == ' ') {
-        player.jump();
-        console.log("jumpy time");
+        if (player.onFloor && !player.jumping) {
+            player.jump();
+            console.log("jumpy time");
+        }
     }
 });
 
