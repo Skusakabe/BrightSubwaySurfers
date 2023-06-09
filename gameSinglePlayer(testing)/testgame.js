@@ -30,7 +30,7 @@ class Player {
         this.spikeHurtboxYMin = 0;
         this.spikeHurtboxYMax = 40;
 
-        this.onFloor = true;
+        this.onSurface = true;
         this.jumping = false
     }
 
@@ -39,7 +39,7 @@ class Player {
     }
 
     jump() {
-        this.onFloor = false;
+        this.onSurface = false;
         this.jumping = true;
         this.y -= 2;
         this.yvel = 7;
@@ -66,14 +66,14 @@ class Player {
                     if (checkIntersecting(this.x + this.blockHitboxXMin, this.x + this.blockHitboxXMax, this.y + this.blockHitboxYMin, this.y + this.blockHitboxYMax, block.x, block.x + block.width, block.y, block.y + block.height)) {
                         if (!this.jumping) {
                             console.log("intersecting with" + block.type);
-                            this.onFloor = true;
+                            this.onSurface = true;
                             this.jumping = false;
                             this.yvel = 0;
                         }
                         checkLanding = false;
                     }
                     else {
-                        this.onFloor = false;
+                        this.onSurface = false;
                     }
                 }
             }
@@ -93,7 +93,7 @@ class Player {
             console.log("ded");
             process.exit(0);
         }
-        if (!this.onFloor) {
+        if (!this.onSurface) {
             this.prevy = this.y;
             this.y -= this.yvel;
             if (this.yvel > -9) {
@@ -192,7 +192,7 @@ var runGame = (e) => {
 //Later change this to store player inputs from multiple clients, which will then execute the code for each corresponding player
 document.addEventListener("keydown", (e) => {
     if (e.key == ' ') {
-        if (player.onFloor && !player.jumping) {
+        if (player.onSurface && !player.jumping) {
             player.jump();
             console.log("jumpy time");
         }
