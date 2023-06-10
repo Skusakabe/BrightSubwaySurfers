@@ -12,3 +12,4 @@ Game similar to the Google dinosaur run, however it is multiplayer (at least two
 # How to Play:
 - Press Spacebar to jump
 - Press the down arrow key while in the air to fast fall.
+- You can land on black obstacles, but die if you run into them. You die if you touch any red obstacle.
