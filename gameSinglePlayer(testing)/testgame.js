@@ -1,3 +1,8 @@
+// To-Do list
+// FPS might run differently on different browsers/computers so might need to change the code to add
+// an FPS cap, so that the game runs the same on all devices (think you can use setTimeout() for this).
+
+
 var obstacles = [];
 var playerTrails = [];
 var timer;
