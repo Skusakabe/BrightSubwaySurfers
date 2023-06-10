@@ -1,5 +1,10 @@
 var obstacles = [];
 var playerTrails = [];
+var timer;
+var startTime;
+var score;
+var canMakeBlock = true;
+var canMakeSpike = true;
 var c = document.getElementById("playground");
 var ctx = c.getContext("2d");
 var startButton = document.getElementById("buttonStart");
@@ -13,6 +18,7 @@ class Player {
         this.prevy = 400;
         this.yvel = 0;
         this.alive = true;
+        this.wantsToJump = false;
 
         //For making the collision box where the player would die if the box collides with a block object
         this.blockHurtboxXMin = 5;
@@ -112,7 +118,6 @@ class Player {
     physics() {
         if (!this.alive) {
             console.log("ded");
-            process.exit(0);
         }
         if (!this.onSurface) {
             this.prevy = this.y;
@@ -120,6 +125,9 @@ class Player {
             if (this.yvel > -9) {
                 this.yvel -= 0.18;
             }
+        }
+        if (this.wantsToJump && this.onSurface && !this.jumping) {
+            this.jump();
         }
         return this.position();
     }
@@ -188,6 +196,11 @@ var clear = (e) => {
 
 var startGame = (e) => {
     clear(e);
+    obstacles = [];
+    playerTrails = [];
+    startTime = Date.now();
+    timer = Math.round(1000 * (Date.now() - startTime)) / 1000;
+    score = 0;
     obstacles.push(new Block(0, 440, 1200, 60, 'Ground'));
     player = new Player();
 
@@ -197,6 +210,7 @@ var startGame = (e) => {
 var runGame = (e) => {
     window.cancelAnimationFrame(requestID);
     clear(e);
+    timer = Math.round(10 * (Date.now() - startTime)) / 10000;
     playerTrails.push(new PlayerTrail(player.x, player.y));
     player.physics();
     player.collisionDetection();
@@ -231,9 +245,12 @@ var runGame = (e) => {
     // without those objects.
     for (var i = obstacles.length - 1; i > 0; i--) {
         if (obstacles[i].x < -100) {
-            if (obstacles[i].type == "Ground") {
-                console.log("removing ground");
+            /*
+            if (!(obstacles[i].type == "Ground")) {
+                obstacles.splice(i, 1);
             }
+            */
+            score += 50;
             obstacles.splice(i, 1);
             //console.log("There are " + obstacles.length + " block objects left");
         }
@@ -244,17 +261,51 @@ var runGame = (e) => {
             //console.log("There are " + playerTrails.length + " trail objects left");
         }
     }
-    blockSpawnRNG = Math.floor(Math.random() * 200);
-    if (blockSpawnRNG == 199) {
-        blockSpawnRNG = Math.floor(Math.random() * 2);
-        if (blockSpawnRNG == 1) {
-            obstacles.push(new Block(1100, 360, 40, 80, 'Spike'));
-        }
-        else {
-            obstacles.push(new Block(1100, 360, 40, 80, 'Solid'));
+    if (timer > 100) {
+        modifier = 100;
+    }
+    else {
+        modifier = timer;
+    }
+    if (canMakeBlock) {
+        blockSpawnRNG = Math.floor(Math.random() * (200 - modifier));
+        if (blockSpawnRNG == 0) {
+            if (canMakeSpike) {
+                blockSpawnRNG = Math.floor(Math.random() * 2);
+            }
+            else {
+                blockSpawnRNG = 0;
+            }
+            if (blockSpawnRNG == 1) {
+                obstacles.push(new Block(1100, 360, 40, 80, 'Spike'));
+                setTimeout(() => {
+                    canMakeSpike = false;
+                    setTimeout(() => {
+                        canMakeSpike = true;
+                    }, 268);
+                }, 201);
+            }
+            else {
+                obstacles.push(new Block(1100, 360, 40, 80, 'Solid'));
+            }
+            canMakeBlock = false;
+            setTimeout(() => {
+                canMakeBlock = true;
+            }, 67);
         }
     }
-    requestID = window.requestAnimationFrame(runGame);
+    ctx.fillStyle = "black";
+    ctx.font = "20px Arial";
+    ctx.fillText("Time: " + timer, 1050, 40);
+    ctx.fillText("Score: " + score, 1050, 80);
+    if (player.alive) {
+        requestID = window.requestAnimationFrame(runGame);
+    }
+    else {
+        ctx.fillStyle = "black";
+        ctx.font = "80px Comic Sans";
+        ctx.fillText("YOU DIED", 400, 250);
+    }
 }
 
 //Later change this to store player inputs from multiple clients, which will then execute the code for each corresponding player
@@ -264,6 +315,12 @@ document.addEventListener("keydown", (e) => {
         if (player.onSurface && !player.jumping) {
             player.jump();
             console.log("jumpy time");
+        }
+        else {
+            player.wantsToJump = true;
+            setTimeout(() => {
+                player.wantsToJump = false;
+            }, 100);
         }
     }
     // Make player fast fall
