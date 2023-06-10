@@ -29,3 +29,7 @@ Game similar to the Google dinosaur run, however it is multiplayer (at least two
 
 7. Cd into the server module and running the server
 ```npm run devstart```
+
+# Sources
+
+A lot of help came from this genius video found [here](https://www.youtube.com/watch?v=ZKEqqIO7n-k)
