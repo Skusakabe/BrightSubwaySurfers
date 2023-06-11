@@ -7,31 +7,83 @@
 
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
     </head>
-    <body>
-        <h1 style="text-align:center;">T-Rex Game</h1>
-        <h3 style="text-align:center;">by BrightSubwaySurfers</h3>
-        <!-- button for controls trigger -->
-        <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myControls">Controls</button>
+    <body background="monke.png" style="background-position: center; background-size: cover; background-repeat: no-repeat; font-family:Verdana, Geneva, Tahoma, sans-serif;box-sizing: border-box; min-height: 100vh; border: solid 25px #4185f4; padding-top: 30px;">
+        <h1 style="text-align:center; ">Monke Game</h1>
+        <h3 style="text-align:center;"><u>by BrightSubwaySurfers</u></h3>
+        <div id="buttons">
+            <!-- solo play -->
+            <a style="margin: 0; position: absolute; top: 35%; left: 50%; -ms-transform: translate(-50%, -50%); transform: translate(-50%, -50%); background-color: #2ed355; color: black; font-size: 25px;" href="/game" class="btn btn-info" role="button">Play Solo</a>
+            <br><br>
+            
+            <!-- create room bttn -->
+            <button style="margin: 0; position: absolute; top: 45%; left: 50%; -ms-transform: translate(-50%, -50%); transform: translate(-50%, -50%); background-color: #2ed355; color: black; font-size: 25px;"type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#createRoom">Create Room</button>
+            <div id="createRoom" class="modal fade" role="dialog">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title">Create Multiplayer Room</h4>
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <p>Enter the name you want your lobby to be:</p>
+                            <input id="lobby"class="form-control" type="text" placeholder="Your Lobby Name">
+                            <br>
+                            <button type="submit" class="btn btn-primary mb-2">Submit</button>
+                        </div>
+                        <div class="modal-footer">
+                            <button style="border-radius:5px; border-color:black" type="button" class="btn btn-default" data-dismiss="modal">Return Home</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <br><br>
 
-        <!-- control modal -->
-        <div id="myControls" class="modal fade" role="dialog">
-            <div class="modal-dialog">
-                <!--  CONTROLS inside modal -->
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h4 class="modal-title">Controls</h4>
-                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <!-- join room bttn -->
+            <button style="margin: 0; position: absolute; top: 55%; left: 50%; -ms-transform: translate(-50%, -50%); transform: translate(-50%, -50%); background-color: #2ed355; color: black; font-size: 25px;"type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#joinRoom">Join Room</button>
+            <div id="joinRoom" class="modal fade" role="dialog">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title">Join Multiplayer Room</h4>
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <p>Enter the name of the lobby you want to join:</p>
+                            <input id="lobby"class="form-control" type="text" placeholder="Existing Lobby Name">
+                            <br>
+                            <button type="submit" class="btn btn-primary mb-2">Submit</button>
+                        </div>
+                        <div class="modal-footer">
+                            <button style="border-radius:5px; border-color:black" type="button" class="btn btn-default" data-dismiss="modal">Return Home</button>
+                        </div>
                     </div>
-                    <div class="modal-body">
-                        <p>here are the game controls!</p>
-                    </div>
-                    <div class="modal-footer">
-                        <button style="border-radius:5px; border-color:black" type="button" class="btn btn-default" data-dismiss="modal">Return Home</button>
+                </div>
+            </div>
+            <br><br>
+
+            <!-- controls bttn -->
+            <button style="margin: 0; position: absolute; top: 70%; left: 50%; -ms-transform: translate(-50%, -50%); transform: translate(-50%, -50%); background-color: #2ed355; color: black; font-size: 25px;"type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myControls">Controls</button>
+            <div id="myControls" class="modal fade" role="dialog">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title">Controls</h4>
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <p>The aim of the game is to avoid the obstacles! You die if you run into black obstacles, but you can land on them. Red obstacles are also deadly.<br></p>
+                                <ul>
+                                    <li><b>Spacebar:</b> Jump</li>
+                                    <li><b>Down Arrow:</b> Fast Fall</li>
+                                </ul>
+                        </div>
+                        <div class="modal-footer">
+                            <button style="border-radius:5px; border-color:black" type="button" class="btn btn-default" data-dismiss="modal">Return Home</button>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-
         <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
         <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
