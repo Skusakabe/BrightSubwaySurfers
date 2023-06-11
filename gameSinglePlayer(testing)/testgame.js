@@ -14,7 +14,7 @@ var c = document.getElementById("playground");
 var ctx = c.getContext("2d");
 var startButton = document.getElementById("buttonStart");
 var requestID;
-var player
+var player;
 
 class Player {
     constructor() {
