@@ -1,24 +1,27 @@
 // For managing game logic (game events and user inputs)
 var express = require('express');
-var http = require('http');
-var socketIO = require('socket.io');
+//var http = require('http');
+//var socketIO = require('socket.io');
 
 var app = express()
-var server = http.createServer();
-var io = socketIO(server);
+var server = require('http').Server(app);//http.createServer();
+var io = require('socket.io')(server);//socketIO(server);
 
 const port = 3000
 
-/*
-app.set('view engine', 'ejs')
+const path = require("path")
 
+app.set('view engine', 'ejs')
+app.set('views', path.dirname("game.ejs").split(path.sep).pop() + '/views');
+
+app.use(express.static('../public'));
 app.get('/', (req, res) => {
-    res.render('pages/index')
+    res.render('game')
 })
 app.listen(port, () => {
     console.log(`App listening at port ${port}`)
 })
-*/
+
 
 var obstacles = [];
 var playerTrails = [];
@@ -208,25 +211,6 @@ var runGame = (e) => {
     }
 }
 
-class PlayerTrail {
-    constructor(x, y) {
-        this.x = x;
-        this.y = y;
-        this.alpha = 0.8;
-        // For alternative animation
-        // this.sizeModifier = 0;
-    }
-
-    physics() {
-        this.x -= 4;
-        if (this.alpha > 0.2) {
-            this.alpha -= 0.02;
-        }
-        // For alternative animation
-        // this.sizeModifier *= 0.95;
-    }
-}
-
 var checkIntersecting = (aXMin, aXMax, aYMin, aYMax, bXMin, bXMax, bYMin, bYMax) => {
     var xIntersection = checkIntersectingX(aXMin, aXMax, bXMin, bXMax)
     var yIntersection = checkIntersectingY(aYMin, aYMax, bYMin, bYMax)
@@ -252,6 +236,7 @@ var checkIntersectingX = (aXMin, aXMax, bXMin, bXMax) => {
 
 io.on('connection', (socket) => {
     // Send the initial game state to the newly connected client
+    console.log("websocket is connected!")
     socket.emit('gameState', gameState);
 
     // Handle client disconnection
@@ -264,27 +249,3 @@ io.on('connection', (socket) => {
         broadcastGameState();
     })
 })
-
-//Later change this to store player inputs from multiple clients, which will then execute the code for each corresponding player
-document.addEventListener("keydown", (e) => {
-    // Make player jump
-    if (e.key == ' ') {
-        if (player.onSurface && !player.jumping) {
-            player.jump();
-            console.log("jumpy time");
-        }
-        else {
-            player.wantsToJump = true;
-            setTimeout(() => {
-                player.wantsToJump = false;
-            }, 100);
-        }
-    }
-    // Make player fast fall
-    if (e.key == 'ArrowDown') {
-        if (!player.onSurface && !player.jumping && player.canFastFall) {
-            player.fastFall();
-            console.log("fasty fall");
-        }
-    }
-});

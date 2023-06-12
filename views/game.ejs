@@ -11,14 +11,20 @@
         #playground { border: 1px solid black }
     </style>
 
-    <canvas width="600" height="250" id="playground">
+    <div>
+        <button id="buttonStart">
+        Start Game
+        </button>
+    </div>
+    <canvas width="1200" height="500" id="playground">
     </canvas>
 
-    <script src="/socket.io/socket.io.js"></script>
+    <!-- <script src="/socket.io/socket.io.js"></script> -->
 
-    <script src ="../controllers/userController.js">
-        var gameCanvas = document.getElementById('playground');
-        var ctx = gameCanvas.getContext('2d');
+    <script src ="/controllers/userController.js">
+        var c = document.getElementById("playground");
+        var ctx = c.getContext("2d");
+        var startButton = document.getElementById("buttonStart");
         var requestID;
 
         var clear = (e) => {
@@ -32,11 +38,34 @@
             // Update the client-side game state based on the received data
             gameState = recievedGameState;
 
-            for (var i = 0; i < gameState[0].length, i++) {
+            for (var i = 0; i < gameState[0].length; i++) {
                 ctx.fillRect(gamestate[0][i].x, gamestate[0][i].y, 40, 40);
             }
-            for (var i = 0; i < gameState[1].length, i++) {
+            for (var i = 0; i < gameState[1].length; i++) {
                 ctx.fillRect(gamestate[1][i].x, gamestate[1][i].y, gamestate[1][i].width, gamestate[1][i].height);
+            }
+        });
+        //Later change this to store player inputs from multiple clients, which will then execute the code for each corresponding player
+        document.addEventListener("keydown", (e) => {
+            // Make player jump
+            if (e.key == ' ') {
+                if (player.onSurface && !player.jumping) {
+                    player.jump();
+                    console.log("jumpy time");
+                }
+                else {
+                    player.wantsToJump = true;
+                    setTimeout(() => {
+                        player.wantsToJump = false;
+                    }, 100);
+                }
+            }
+            // Make player fast fall
+            if (e.key == 'ArrowDown') {
+                if (!player.onSurface && !player.jumping && player.canFastFall) {
+                    player.fastFall();
+                    console.log("fasty fall");
+                }
             }
         });
     </script>
