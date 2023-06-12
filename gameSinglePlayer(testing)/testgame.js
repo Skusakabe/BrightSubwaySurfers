@@ -63,7 +63,8 @@ class Player {
         this.onSurface = false;
         this.jumping = true;
         this.y -= 2;
-        this.yvel = 7;
+        this.yvel = 16;
+        // If at 144 fps, set yvel to 7
         setTimeout(() => {
             console.log('hm');
             this.jumping = false;
@@ -72,7 +73,8 @@ class Player {
     }
 
     fastFall() {
-        this.yvel = -15;
+        // If at 144 fps, this.yvel = -15
+        this.yvel = -30;
         this.canFastFall = false;
     }
 
@@ -134,8 +136,9 @@ class Player {
         if (!this.onSurface) {
             this.prevy = this.y;
             this.y -= this.yvel;
-            if (this.yvel > -9) {
-                this.yvel -= 0.18;
+            // If at 144 fps, this.yvel > -9 and this.yvel -= 0.18
+            if (this.yvel > -18) {
+                this.yvel -= 1.1;
             }
         }
         if (this.wantsToJump && this.onSurface && !this.jumping) {
@@ -155,7 +158,8 @@ class Block {
     }
 
     physics() {
-        this.x -= 4;
+        // If at 144 fps, this.x -= 4
+        this.x -= 9.6;
         return;
     }
 }
@@ -170,7 +174,8 @@ class PlayerTrail {
     }
 
     physics() {
-        this.x -= 4;
+        // If at 144 fps, this.x -= 4
+        this.x -= 9.6;
         if (this.alpha > 0.2) {
             this.alpha -= 0.02;
         }
@@ -284,13 +289,16 @@ var runGame = (e) => {
             }
         }
         if (timer > 100) {
-            modifier = 100;
+            // If at 144 fps modifier = 40
+            modifier = 40;
         }
         else {
+            // If at 144 fps modifier = timer / 2.5
             modifier = timer;
         }
         if (canMakeBlock) {
-            blockSpawnRNG = Math.floor(Math.random() * (200 - modifier));
+            // If at 144 fps change 80 to 40
+            blockSpawnRNG = Math.floor(Math.random() * (80 - modifier));
             if (blockSpawnRNG == 0) {
                 if (canMakeSpike) {
                     blockSpawnRNG = Math.floor(Math.random() * 2);
