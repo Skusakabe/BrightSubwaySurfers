@@ -20,7 +20,7 @@ var msNow;
 var msPrev;
 var msPassed;
 var excessMs;
-const fps = 144;
+const fps = 60;
 const msPerFrame = 1000 / fps;
 
 class Player {
