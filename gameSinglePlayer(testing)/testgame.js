@@ -4,6 +4,7 @@
 
 
 var obstacles = [];
+var frames = 0;
 var playerTrails = [];
 var timer;
 var startTime;
@@ -15,6 +16,12 @@ var ctx = c.getContext("2d");
 var startButton = document.getElementById("buttonStart");
 var requestID;
 var player;
+var msNow;
+var msPrev;
+var msPassed;
+var excessMs;
+const fps = 144;
+const msPerFrame = 1000 / fps;
 
 class Player {
     constructor() {
@@ -204,6 +211,8 @@ var startGame = (e) => {
     obstacles = [];
     playerTrails = [];
     startTime = Date.now();
+    msPrev = Date.now();
+    msPassed = 0;
     timer = Math.round(1000 * (Date.now() - startTime)) / 1000;
     score = 0;
     obstacles.push(new Block(0, 440, 1200, 60, 'Ground'));
@@ -213,103 +222,113 @@ var startGame = (e) => {
 }
 
 var runGame = (e) => {
-    window.cancelAnimationFrame(requestID);
-    clear(e);
-    timer = Math.round(10 * (Date.now() - startTime)) / 10000;
-    playerTrails.push(new PlayerTrail(player.x, player.y));
-    player.physics();
-    player.collisionDetection();
-    ctx.fillStyle = "green";
-    ctx.shadowColor = "yellow";
-    ctx.shadowBlur = 15;
-    ctx.fillRect(player.x, player.y, 40, 40);
-    ctx.shadowColor = "black";
-    ctx.shadowBlur = 0;
-    for (var i = 0; i < playerTrails.length; i++) {
-        playerTrails[i].physics();
-        ctx.globalAlpha = playerTrails[i].alpha;
-        ctx.fillRect(playerTrails[i].x, playerTrails[i].y, 40, 40);
-        // For alternative animation
-        // ctx.fillRect(playerTrails[i].x, playerTrails[i].y + 40 - playerTrails[i].sizeModifier * 40, playerTrails[i].sizeModifier * 40, playerTrails[i].sizeModifier * 40);
-    }
-    ctx.globalAlpha = 1.0;
-    for (var i = 0; i < obstacles.length; i++) {
-        if (!(obstacles[i].type == 'Ground')) {
-            obstacles[i].physics();
-        }
-        if (obstacles[i].type == 'Ground' || obstacles[i].type == 'Solid') {
-            ctx.fillStyle = "black";
-        }
-        if (obstacles[i].type == 'Spike') {
-            ctx.fillStyle = "red";
-        }
-        ctx.fillRect(obstacles[i].x,obstacles[i].y,obstacles[i].width,obstacles[i].height);
-    }
-    // For these parts where you remove an object from the array, make sure NOT to do obstacles = obstacles.splice(i, 1)
-    // as obstacles.splice(i,1) actually returns an array containing the objects that you removed, NOT the original array
-    // without those objects.
-    for (var i = obstacles.length - 1; i > 0; i--) {
-        if (obstacles[i].x < -100) {
-            /*
-            if (!(obstacles[i].type == "Ground")) {
-                obstacles.splice(i, 1);
-            }
-            */
-            score += 50;
-            obstacles.splice(i, 1);
-            //console.log("There are " + obstacles.length + " block objects left");
-        }
-    }
-    for (var i = playerTrails.length - 1; i > -1; i--) {
-        if (playerTrails[i].x < -40) {
-            playerTrails.splice(i, 1);
-            //console.log("There are " + playerTrails.length + " trail objects left");
-        }
-    }
-    if (timer > 100) {
-        modifier = 100;
-    }
-    else {
-        modifier = timer;
-    }
-    if (canMakeBlock) {
-        blockSpawnRNG = Math.floor(Math.random() * (200 - modifier));
-        if (blockSpawnRNG == 0) {
-            if (canMakeSpike) {
-                blockSpawnRNG = Math.floor(Math.random() * 2);
-            }
-            else {
-                blockSpawnRNG = 0;
-            }
-            if (blockSpawnRNG == 1) {
-                obstacles.push(new Block(1100, 360, 40, 80, 'Spike'));
-                setTimeout(() => {
-                    canMakeSpike = false;
-                    setTimeout(() => {
-                        canMakeSpike = true;
-                    }, 268);
-                }, 201);
-            }
-            else {
-                obstacles.push(new Block(1100, 360, 40, 80, 'Solid'));
-            }
-            canMakeBlock = false;
-            setTimeout(() => {
-                canMakeBlock = true;
-            }, 67);
-        }
-    }
-    ctx.fillStyle = "black";
-    ctx.font = "20px Arial";
-    ctx.fillText("Time: " + timer, 1050, 40);
-    ctx.fillText("Score: " + score, 1050, 80);
-    if (player.alive) {
+    msNow = Date.now();
+    msPassed = msNow - msPrev;
+    if (msPassed < msPerFrame) {
         requestID = window.requestAnimationFrame(runGame);
     }
     else {
+        excessMs = msPassed % msPerFrame;
+        msPrev = msNow - excessMs;
+        window.cancelAnimationFrame(requestID);
+        clear(e);
+        timer = Math.round(10 * (Date.now() - startTime)) / 10000;
+        playerTrails.push(new PlayerTrail(player.x, player.y));
+        player.physics();
+        player.collisionDetection();
+        ctx.fillStyle = "green";
+        ctx.shadowColor = "yellow";
+        ctx.shadowBlur = 15;
+        ctx.fillRect(player.x, player.y, 40, 40);
+        ctx.shadowColor = "black";
+        ctx.shadowBlur = 0;
+        for (var i = 0; i < playerTrails.length; i++) {
+            playerTrails[i].physics();
+            ctx.globalAlpha = playerTrails[i].alpha;
+            ctx.fillRect(playerTrails[i].x, playerTrails[i].y, 40, 40);
+            // For alternative animation
+            // ctx.fillRect(playerTrails[i].x, playerTrails[i].y + 40 - playerTrails[i].sizeModifier * 40, playerTrails[i].sizeModifier * 40, playerTrails[i].sizeModifier * 40);
+        }
+        ctx.globalAlpha = 1.0;
+        for (var i = 0; i < obstacles.length; i++) {
+            if (!(obstacles[i].type == 'Ground')) {
+                obstacles[i].physics();
+            }
+            if (obstacles[i].type == 'Ground' || obstacles[i].type == 'Solid') {
+                ctx.fillStyle = "black";
+            }
+            if (obstacles[i].type == 'Spike') {
+                ctx.fillStyle = "red";
+            }
+            ctx.fillRect(obstacles[i].x, obstacles[i].y, obstacles[i].width, obstacles[i].height);
+        }
+        // For these parts where you remove an object from the array, make sure NOT to do obstacles = obstacles.splice(i, 1)
+        // as obstacles.splice(i,1) actually returns an array containing the objects that you removed, NOT the original array
+        // without those objects.
+        for (var i = obstacles.length - 1; i > 0; i--) {
+            if (obstacles[i].x < -100) {
+                /*
+                if (!(obstacles[i].type == "Ground")) {
+                    obstacles.splice(i, 1);
+                }
+                */
+                score += 50;
+                obstacles.splice(i, 1);
+                //console.log("There are " + obstacles.length + " block objects left");
+            }
+        }
+        for (var i = playerTrails.length - 1; i > -1; i--) {
+            if (playerTrails[i].x < -40) {
+                playerTrails.splice(i, 1);
+                //console.log("There are " + playerTrails.length + " trail objects left");
+            }
+        }
+        if (timer > 100) {
+            modifier = 100;
+        }
+        else {
+            modifier = timer;
+        }
+        if (canMakeBlock) {
+            blockSpawnRNG = Math.floor(Math.random() * (200 - modifier));
+            if (blockSpawnRNG == 0) {
+                if (canMakeSpike) {
+                    blockSpawnRNG = Math.floor(Math.random() * 2);
+                }
+                else {
+                    blockSpawnRNG = 0;
+                }
+                if (blockSpawnRNG == 1) {
+                    obstacles.push(new Block(1100, 360, 40, 80, 'Spike'));
+                    setTimeout(() => {
+                        canMakeSpike = false;
+                        setTimeout(() => {
+                            canMakeSpike = true;
+                        }, 268);
+                    }, 201);
+                }
+                else {
+                    obstacles.push(new Block(1100, 360, 40, 80, 'Solid'));
+                }
+                canMakeBlock = false;
+                setTimeout(() => {
+                    canMakeBlock = true;
+                }, 67);
+            }
+        }
         ctx.fillStyle = "black";
-        ctx.font = "80px Comic Sans";
-        ctx.fillText("YOU DIED", 400, 250);
+        ctx.font = "20px Arial";
+        ctx.fillText("Time: " + timer, 1050, 40);
+        ctx.fillText("Score: " + score, 1050, 80);
+        frames++;
+        if (player.alive) {
+            requestID = window.requestAnimationFrame(runGame);
+        }
+        else {
+            ctx.fillStyle = "black";
+            ctx.font = "80px Comic Sans";
+            ctx.fillText("YOU DIED", 400, 250);
+        }
     }
 }
 
@@ -338,3 +357,7 @@ document.addEventListener("keydown", (e) => {
 });
 
 startButton.addEventListener("click", startGame);
+
+setInterval(() => {
+    console.log(frames);
+}, 1000);
