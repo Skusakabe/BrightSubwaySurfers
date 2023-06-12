@@ -63,7 +63,7 @@ class Player {
         this.onSurface = false;
         this.jumping = true;
         this.y -= 2;
-        this.yvel = 16;
+        this.yvel = 17.5;
         // If at 144 fps, set yvel to 7
         setTimeout(() => {
             console.log('hm');
@@ -74,7 +74,7 @@ class Player {
 
     fastFall() {
         // If at 144 fps, this.yvel = -15
-        this.yvel = -30;
+        this.yvel = -34;
         this.canFastFall = false;
     }
 
@@ -132,19 +132,20 @@ class Player {
     physics() {
         if (!this.alive) {
             console.log("ded");
+            return;
         }
         if (!this.onSurface) {
             this.prevy = this.y;
             this.y -= this.yvel;
             // If at 144 fps, this.yvel > -9 and this.yvel -= 0.18
-            if (this.yvel > -18) {
-                this.yvel -= 1.1;
+            if (this.yvel > -20) {
+                this.yvel -= 1.2;
             }
         }
         if (this.wantsToJump && this.onSurface && !this.jumping) {
             this.jump();
         }
-        return this.position();
+        return;
     }
 }
 
@@ -239,8 +240,13 @@ var runGame = (e) => {
         clear(e);
         timer = Math.round(10 * (Date.now() - startTime)) / 10000;
         playerTrails.push(new PlayerTrail(player.x, player.y));
-        player.physics();
         player.collisionDetection();
+        player.physics();
+        if (!player.alive) {
+            ctx.fillStyle = "black";
+            ctx.font = "80px Comic Sans";
+            ctx.fillText("YOU DIED", 400, 250);    
+        }
         ctx.fillStyle = "green";
         ctx.shadowColor = "yellow";
         ctx.shadowBlur = 15;
@@ -331,11 +337,6 @@ var runGame = (e) => {
         frames++;
         if (player.alive) {
             requestID = window.requestAnimationFrame(runGame);
-        }
-        else {
-            ctx.fillStyle = "black";
-            ctx.font = "80px Comic Sans";
-            ctx.fillText("YOU DIED", 400, 250);
         }
     }
 }
